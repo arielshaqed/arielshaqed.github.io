@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+
+  <link type="text/css" href="shapes.css" rel="stylesheet">
+  <script src="multiply-mod-N.js"></script>
+
+  <!-- arielshaqed: Get a nice page stylesheet here!
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  -->
+
+  <title>כופלים במעגל (מאת ariels)</title>
+</head>
+
+<body onload="chartInit()">
+  <p>
+    <label for="numPoints">N = </label>
+    <input id="numPoints" type="number" min=2 max=1000 value=100><!-- TODO: Add a box with useful values -->
+    <br/>
+    <label for="multiplier">Factor = </label>
+    <input id="multiplier" type="number" min=1 max=1000 value=7>
+  </p>
+  <svg id="chart"></svg>  
+</body>
+
+</html>
+
