@@ -40,26 +40,31 @@ function drawBase() {
   chart.selectAll('circle').remove();
   for (let i = 0; i < numCircles; i++) {
     const a = 2 * Math.PI / numCircles * i;
-    points.push([axis(Math.cos(a)), axis(Math.sin(a))]);
+    points.push({ x: axis(Math.cos(a)), y: axis(Math.sin(a)) });
   }
 
   chart.selectAll('circle')
     .data(points)
     .enter().append('circle')
-    .attr('cx', d => d[0])
-    .attr('cy', d => d[1])
+    .attr('cx', d => d.x)
+    .attr('cy', d => d.y)
     .attr('r', 2)
     .classed('dot', true);
 }
 
 function drawLines() {
-  chart.selectAll('line').remove();
   multiplier = d3.select('#multiplier').node().value;
-  for (let i = 0; i < numCircles; i++)
-    chart.append('line')
-    .attr('x1', points[i][0])
-    .attr('y1', points[i][1])
-    .attr('x2', points[multiplier * i % numCircles][0])
-    .attr('y2', points[multiplier * i % numCircles][1])
-    .classed('connector', true).attr("marker-end", "url(#arrowhead)");
+  const dots = chart.selectAll('.connector').data(points);
+
+  dots.exit().remove();
+
+  dots.enter()
+    .append('line')
+    .classed('connector', true)
+    .attr("marker-end", "url(#arrowhead)")
+    .merge(dots)
+    .attr('x1', d => d.x)
+    .attr('y1', d => d.y)
+    .attr('x2', (d, idx) => points[multiplier * idx % numCircles].x)
+    .attr('y2', (d, idx) => points[multiplier * idx % numCircles].y)
 }
