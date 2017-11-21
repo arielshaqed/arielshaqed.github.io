@@ -12,6 +12,10 @@ body {
     fill: red;
 }
 
+.dot.target {
+    fill: green;
+}
+
 .connector {
     stroke: #bbb;
 }

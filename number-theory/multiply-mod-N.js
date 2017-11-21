@@ -6,6 +6,14 @@ let multiplier = undefined;
 
 let chart, axis, points;
 
+function gcd(a, b) {
+  if (a < b) [a, b] = [b, a];
+  while (b > 0) {
+    [a, b] = [b, a % b];
+  }
+  return a;
+}
+
 function chartInit() {
   chart = d3.select('#chart')
     .attr('width', 2 * rad + 60)
@@ -28,7 +36,7 @@ function chartInit() {
     .attr("d", "M 0,0 V 4 L6,2 Z"); 
 
   d3.select('#numPoints').on('input', () => { drawBase(); drawLines(); });
-  d3.select('#multiplier').on('input', drawLines);
+  d3.select('#multiplier').on('input', () => { drawDots(); drawLines(); });
 
   drawBase();
   drawLines();
@@ -43,26 +51,37 @@ function drawBase() {
     points.push({ x: axis(Math.cos(a)), y: axis(Math.sin(a)) });
   }
 
-  chart.selectAll('circle')
-    .data(points)
-    .enter().append('circle')
+  drawDots();
+}
+
+function drawDots() {
+  const dots = chart.selectAll('.circle').data(points);
+  multiplier = d3.select('#multiplier').node().value;
+  const targetMultiplier = gcd(points.length, multiplier);
+
+  dots.exit().remove();
+
+    dots.enter()
+    .append('circle')
     .attr('cx', d => d.x)
     .attr('cy', d => d.y)
     .attr('r', 2)
-    .classed('dot', true);
+    .merge(dots)
+    .attr('class', (d, idx) => idx % targetMultiplier === 0 ? 'dot target' : 'dot');
 }
 
 function drawLines() {
   multiplier = d3.select('#multiplier').node().value;
-  const dots = chart.selectAll('.connector').data(points);
 
-  dots.exit().remove();
+  const lines = chart.selectAll('.connector').data(points);
 
-  dots.enter()
+  lines.exit().remove();
+
+  lines.enter()
     .append('line')
-    .classed('connector', true)
-    .attr("marker-end", "url(#arrowhead)")
-    .merge(dots)
+    .attr('class', 'connector')
+    .attr('marker-end', 'url(#arrowhead)')
+    .merge(lines)
     .attr('x1', d => d.x)
     .attr('y1', d => d.y)
     .attr('x2', (d, idx) => points[multiplier * idx % numCircles].x)
